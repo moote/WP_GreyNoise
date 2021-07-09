@@ -40,6 +40,7 @@ define('WP_GREYNOISE_VERSION', '0.9.1');
 define('WP_GREYNOISE_MINIMUM_WP_VERSION', '4.0');
 define('WP_GREYNOISE_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
 define('WP_GREYNOISE_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ));
+define('WP_GREYNOISE_DB_TABLE_NAME', 'wpg_ip_log');
 
 register_activation_hook( __FILE__, ['WP_GreyNoise', 'plugin_activation']);
 register_deactivation_hook( __FILE__, ['WP_GreyNoise', 'plugin_deactivation']);
@@ -51,10 +52,3 @@ if(is_admin()){
 	require_once(WP_GREYNOISE_PLUGIN_DIR . 'class.wp_greynoise-admin.php');
 	add_action('init', ['WP_GreyNoise_Admin', 'init']);
 }
-
-// // debug
-// function tl_save_error() {
-//     update_option( 'plugin_error',  ob_get_contents() );
-// }
-// add_action( 'activated_plugin', 'tl_save_error' );
-// echo get_option( 'plugin_error' );

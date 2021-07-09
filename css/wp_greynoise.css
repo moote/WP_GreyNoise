@@ -10,11 +10,6 @@
     margin: 0 20px 0 2px; 
 }
 
-#wpg-api-key-verified{
-    display: inline-block;
-    background-color: aqua;
-}
-
 #wpg_api_key_cell{
     background-image: none;
 }
