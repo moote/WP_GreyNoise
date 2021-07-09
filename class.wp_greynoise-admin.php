@@ -24,6 +24,36 @@ class WP_GreyNoise_Admin
 		add_action('admin_menu', ['WP_GreyNoise_Admin', 'adminMenu']);
 	}
 
+	/**
+	 * Register plugin settings
+	 */
+	public static function registerSettings()
+	{
+		// apiKey
+		add_option('wpg_api_key', false);
+		register_setting(
+			'wpg_options_group',
+			'wpg_api_key',
+			[
+				'sanitize_callback' => ['WP_GreyNoise_Admin', 'validateApiKey'],
+			]
+		);
+
+		// enableGreyNoise
+		add_option('wpg_is_enable_greynoise', false);
+		register_setting(
+			'wpg_options_group',
+			'wpg_is_enable_greynoise'
+		);
+
+		// isVerboseLogging
+		add_option('wpg_is_verbose_logging', false);
+		register_setting(
+			'wpg_options_group',
+			'wpg_is_verbose_logging'
+		);
+	}
+
 	public static function adminMenu()
 	{
 		add_options_page(
@@ -42,18 +72,6 @@ class WP_GreyNoise_Admin
 			['WP_GreyNoise_Admin', 'adminPageRender'],
 			'',
 			66
-		);
-	}
-
-	public static function registerSettings()
-	{
-		add_option('wpg_api_key', false);
-		register_setting(
-			'wpg_options_group',
-			'wpg_api_key',
-			[
-				'sanitize_callback' => ['WP_GreyNoise_Admin', 'validateApiKey'],
-			]
 		);
 	}
 
