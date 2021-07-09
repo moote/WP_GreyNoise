@@ -1,0 +1,27 @@
+#wpg-form-wrap {
+    position: relative;
+}
+
+#wpg-form-wrap .notice{
+    display: inline-block;
+    line-height: 1.4;
+    padding: 11px 15px;
+    font-size: 14px;
+    margin: 0 20px 0 2px; 
+}
+
+#wpg-api-key-verified{
+    display: inline-block;
+    background-color: aqua;
+}
+
+#wpg_api_key_cell{
+    background-image: none;
+}
+
+#wpg_api_key_cell.verified{
+    background-image: url("../images/thumbs-up.svg");
+    background-repeat: no-repeat;
+    background-position-x: 370px;
+    background-position-y: 18px;
+}

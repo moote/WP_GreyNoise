@@ -36,9 +36,10 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
-define( 'WP_GREYNOISE_VERSION', '0.9.1' );
-define( 'WP_GREYNOISE_MINIMUM_WP_VERSION', '4.0' );
-define( 'WP_GREYNOISE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define('WP_GREYNOISE_VERSION', '0.9.1');
+define('WP_GREYNOISE_MINIMUM_WP_VERSION', '4.0');
+define('WP_GREYNOISE_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+define('WP_GREYNOISE_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ));
 
 register_activation_hook( __FILE__, ['WP_GreyNoise', 'plugin_activation']);
 register_deactivation_hook( __FILE__, ['WP_GreyNoise', 'plugin_deactivation']);
