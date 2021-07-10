@@ -81,12 +81,12 @@ class WP_GreyNoise_Admin
 		);
 
 		// isVerboseLogging
-		add_option('wpg_is_verbose_logging', false);
+		add_option('wpg_cron_purge_days', 7);
 		register_setting(
 			'wpg_options_group',
-			'wpg_is_verbose_logging',
+			'wpg_cron_purge_days',
 			[
-				'sanitize_callback' => ['WP_GreyNoise_Admin', 'validateIsVerboseLogging'],
+				'sanitize_callback' => ['WP_GreyNoise_Admin', 'validateCronPurgeDays'],
 			]
 		);
 
@@ -163,14 +163,24 @@ class WP_GreyNoise_Admin
 	}
 
 	/**
-	 * Validate 'verbose logging' checkbox
+	 * Validate cron purge select box setting.
 	 * 
-	 * @param int|NULL $isVerboseLoging The form checkbox value
+	 * @param int $cronPurgeDays The form checkbox value
 	 * @return bool
 	 */
-	public static function validateIsVerboseLogging(?int $isVerboseLoging): bool
+	public static function validateCronPurgeDays(int $cronPurgeDays): int
 	{
-		return self::validateBoolean($isVerboseLoging);
+		// define valid days
+		$validDays = [7, 14, 21, 30];
+		$cleanCronPurgeDays = 7;
+
+		// test value, set to 7 if not valid
+		if(in_array($cronPurgeDays, $validDays)){
+			$cleanCronPurgeDays = $cronPurgeDays;
+		}
+
+		// return clean value
+		return $cleanCronPurgeDays;
 	}
 
 	/**
@@ -279,13 +289,21 @@ class WP_GreyNoise_Admin
 					</tr>
 					<tr valign="top">
 						<th scope="row">
-							<label for="wpg_is_verbose_logging">Enable Verbose Logging?</label>
+							<label for="wpg_cron_purge_days">Delete non-malicious IPs after how many days?</label>
 						</th>
 						<td>
-							<input type="checkbox" id="wpg_is_verbose_logging" name="wpg_is_verbose_logging" value="1" <?php checked(get_option('wpg_is_verbose_logging')) ?>" />
+							<select name='wpg_cron_purge_days'>
+								<option value='7' <?php selected( get_option('wpg_cron_purge_days'), 7 ); ?>>7</option>
+								<option value='14' <?php selected( get_option('wpg_cron_purge_days'), 14 ); ?>>14</option>
+								<option value='21' <?php selected( get_option('wpg_cron_purge_days'), 21 ); ?>>21</option>
+								<option value='30' <?php selected( get_option('wpg_cron_purge_days'), 30 ); ?>>30</option>
+							</select>
+
 							<p class="description">
-								Selecting this will log the IP address of <strong><i>every</i></strong> visitor! This can generate large
-								amounts of data, and quickly fill your database; <strong><i>use with extreme caution!</i></strong>
+								This plugin logs the IP address of <strong><i>every</i></strong> visitor, it can generate large
+								amounts of data, and quickly fill your database.
+								<br>
+								Use this setting to automatically purge non-malicious IP addresses after a number of days since last activity.
 							</p>
 						</td>
 					</tr>

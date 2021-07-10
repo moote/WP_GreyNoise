@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 use GreyNoise\GreyNoise;
 
+require_once(WP_GREYNOISE_PLUGIN_DIR.'class.wp_greynoise-admin.php');
 require_once(WP_GREYNOISE_PLUGIN_DIR.'GreyNoise/GreyNoise.php');
 
 class WP_GreyNoise
@@ -50,7 +51,16 @@ class WP_GreyNoise
 	{
 		self::$initiated = true;
 
+		// ip lookup / logging
 		add_action('wp_loaded', ['WP_GreyNoise', 'logIpAddress']);
+
+		// cron purge 
+		// special interval for testing
+		add_filter('cron_schedules', ['WP_GreyNoise', 'addCronInterval']);
+		add_action('wpg_cron_hook', ['WP_GreyNoise', 'cronPurge']);
+		if(!wp_next_scheduled('wpg_cron_hook')){
+			wp_schedule_event(time(), 'daily', 'wpg_cron_hook');
+		}
 	}
 
 	/**
@@ -94,7 +104,7 @@ class WP_GreyNoise
 		// clear settings from db
 		delete_option('wpg_api_key');
 		delete_option('wpg_is_enable_greynoise');
-		delete_option('wpg_is_verbose_logging');
+		delete_option('wpg_cron_purge_days');
 
 		// remove log table from db
 		// define SQL
@@ -104,6 +114,11 @@ class WP_GreyNoise
 		// by dbDelta()
 		global $wpdb;
 		$wpdb->query($sql);
+
+		// deregister cron
+		$timestamp = wp_next_scheduled('wpg_cron_hook');
+		wp_unschedule_event($timestamp, 'wpg_cron_hook');
+		remove_filter('cron_schedules', 'addCronInterval');
 	}
 
 	/**
@@ -173,8 +188,11 @@ class WP_GreyNoise
 			}
 
 			// debug
-			$ipAddress = '103.123.234.37';
+			$ipAddress = '103.123.234.37'; // malicious
+			// $ipAddress = '167.248.133.77'; // benign
+			// $ipAddress = '162.156.111.156'; // unseen
 
+			// exit if not IP or local IP
 			if(!$ipAddress || $ipAddress === '127.0.0.1'){
 				return false;
 			}
@@ -260,7 +278,7 @@ class WP_GreyNoise
 			return NULL;
 		}
 
-		$responseArr = $gn->callIpContext($ipAddress, get_option('wpg_is_verbose_logging'));
+		$responseArr = $gn->callIpContext($ipAddress);
 
 		// validate the result
 		if(!is_null($responseArr)){
@@ -371,5 +389,51 @@ class WP_GreyNoise
 		);
 
 		return $query;
+	}
+
+	/**
+	 * Called daily by the WP cron system, deletes all non-malicious log entries whos
+	 * last updated value is longer ago than the `wpg_cron_purge_days` plugin setting.
+	 */
+	public static function cronPurge()
+	{
+		if(WP_GreyNoise_Admin::isGreyNoiseRunning()){
+			global $wpdb;
+
+			// get table name
+			$tableName = self::buildTableName();
+
+			// define query
+			$query = $wpdb->prepare(
+				"
+					DELETE
+					FROM {$tableName}
+					WHERE
+						updated_at <= DATE_SUB(NOW(), INTERVAL %d DAY)
+						AND classification <> 'malicious'
+					;
+				",
+				[
+					get_option('wpg_cron_purge_days', 7),
+				]
+			);
+
+			// execute
+			$wpdb->query($query);	
+		}
+	}
+
+	/**
+	 * Special interval for testing cron jobs
+	 * 
+	 * @param array $schedules
+	 */
+	public function addCronInterval(array $schedules){
+		$schedules['five_seconds'] = [
+			'interval' => 5,
+			'display'  => esc_html__('Every Five Seconds'),
+		];
+
+		return $schedules;
 	}
 }

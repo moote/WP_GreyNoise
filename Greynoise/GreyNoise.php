@@ -116,7 +116,7 @@ class GreyNoise
      * 
      * @return array|NULL
      */
-    public function callIpContext(string $ipAddress, bool $verbose): ?array
+    public function callIpContext(string $ipAddress): ?array
     {
         // init call class
         $this->initIpContext();
@@ -127,20 +127,15 @@ class GreyNoise
             // get response array
             $responseArray = $this->ipContext->getResponseArray();
 
-            // only log if verbose or malicious
-            if($verbose || $responseArray['classification'] === 'malicious'){
-                return [
-                    'seen' => $responseArray['seen'],
-                    'classification' => $responseArray['classification'],
-                    'cve' => implode(',', $responseArray['cve']),
-                    'country' => $responseArray['metadata']['country'],
-                    'org' => $responseArray['metadata']['organization'],
-                    'raw_response' => $this->ipContext->getResponseRaw()
-                ];
-            }
-            else{
-                return NULL;
-            }
+            // return formatted data
+            return [
+                'seen' => $responseArray['seen'],
+                'classification' => !$responseArray['seen'] ? 'unseen' : $responseArray['classification'],
+                'cve' => is_array($responseArray['cve']) ? implode(',', $responseArray['cve']) : NULL,
+                'country' => $responseArray['metadata']['country'],
+                'org' => $responseArray['metadata']['organization'],
+                'raw_response' => $this->ipContext->getResponseRaw()
+            ];
         }
         else{
             // handle error
