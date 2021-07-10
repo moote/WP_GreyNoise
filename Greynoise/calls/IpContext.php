@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IP Context call class for GreyNoise
+ * This class handles the call to the GreyNoise API IP Context endpoint
  * https://developer.greynoise.io/reference/ip-lookup-1#noisecontextip-1
  * 
  * @author  Rich Conaway
@@ -29,7 +29,9 @@ namespace GreyNoise\calls;
 
 require_once(__DIR__.'/GreyNoiseCallInterface.php');
 
-class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
+use GreyNoise\calls\GreyNoiseCallInterface;
+
+class IpContext implements GreyNoiseCallInterface
 {
     /** @var string */
     protected $apiKey;
@@ -48,6 +50,8 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
 
     /**
      * Constructor
+     * 
+     * @param string $apiKey GN API key string
      */
     public function __construct(string $apiKey)
     {
@@ -58,6 +62,9 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
     /**
      * Call the GreyNoise API Ip Context endpoint.
      * Returns 'true' if call successful, 'false' on error.
+     * 
+     * @param string params Dot notated Ip address string 
+     * @return bool
      */
     public function call($params): bool
     {
@@ -91,11 +98,6 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
             return false;
         }
         else {
-            // echo "<pre>".var_export($this->httpCode, true)."</pre>";
-            // echo "<pre>".var_export($this->response, true)."</pre>"; exit;
-
-            // TODO: log response to db
-
             // convert JSON response to array
             $this->responseArray = json_decode($this->responseRaw, true);
 
@@ -105,6 +107,8 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
 
     /**
      * Return the raw (string) response.
+     * 
+     * @return string
      */
     public function getResponseRaw(): string
     {
@@ -114,6 +118,8 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
     /**
      * Return the assoc. array representation of the
      * response (json_decode).
+     * 
+     * @return array
      */
     public function getResponseArray(): array
     {
@@ -122,6 +128,8 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
 
     /**
      * Return the HTTP code for the last response
+     * 
+     * @return string
      */
     public function getHttpCode(): string
     {
@@ -130,6 +138,8 @@ class IpContext implements \GreyNoise\calls\GreyNoiseCallInterface
 
     /**
      * Reurn the error for last call (if set).
+     * 
+     * @return string
      */
     public function getError(): string
     {

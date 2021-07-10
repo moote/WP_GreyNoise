@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GreyNoise IP Lookup service call hanling class
+ * This singleton class handles all GreyNoise API calls, using the appropriate endpoint class.
  * https://developer.greynoise.io/reference/ip-lookup-1
  * 
  * @author  Rich Conaway
@@ -29,9 +29,11 @@ namespace GreyNoise;
 
 require_once(__DIR__.'/calls/IpContext.php');
 
+use GreyNoise\calls\IpContext;
+
 class GreyNoise
 {
-    /** @var GreyNoise */
+    /** @var \GreyNoise\GreyNoise */
     protected static $instance;
 
     /** @var string */
@@ -42,7 +44,13 @@ class GreyNoise
 
     const VALIDATE_IP_ADDRESS = "8.8.8.8";
 
-    public static function getInstance(string $apiKey)
+    /**
+     * Singleton instantiation function
+     * 
+     * @param string $apiKey GN API key string
+	 * @return \GreyNoise\GreyNoise|NULL
+     */
+    public static function getInstance(string $apiKey): ?\GreyNoise\GreyNoise
     {
         if(!self::$instance){
             // instantiate new instance
@@ -58,6 +66,11 @@ class GreyNoise
         return self::$instance;
     }
 
+    /**
+     * Constructor
+     * 
+     * @param string $apiKey GN API key string
+     */
     public function __construct(string $apiKey)
     {
         // store api key
@@ -68,6 +81,8 @@ class GreyNoise
      * Validate the API key by making a call to IP context
      * with a known IP address.
      * If the call is successfull, API key is valid.
+     * 
+     * @return bool
      */
     public function validateApiKey(): bool
     {
@@ -83,27 +98,53 @@ class GreyNoise
         }
     }
 
+    /**
+     * Initialise the IpContext class if not already set
+     */
     protected function initIpContext()
     {
         // init call class
         if(!$this->ipContext){
-            $this->ipContext = new \GreyNoise\calls\IpContext($this->apiKey);
+            $this->ipContext = new IpContext($this->apiKey);
         }
     }
 
-    public function callIpContext(string $ipAddress)
+    /**
+     * Calls the GN API via IpContext class with specified IP address.
+     * If the IP is malicious, formatted results are returned. On error 
+     * or non-malicious, NULL is returned
+     * 
+     * @return array|NULL
+     */
+    public function callIpContext(string $ipAddress, bool $verbose): ?array
     {
         // init call class
         $this->initIpContext();
         
         // make call
         if($this->ipContext->call($ipAddress)){
-            // handle success
+            // handle success; return var array
+            // get response array
+            $responseArray = $this->ipContext->getResponseArray();
 
+            // only log if verbose or malicious
+            if($verbose || $responseArray['classification'] === 'malicious'){
+                return [
+                    'seen' => $responseArray['seen'],
+                    'classification' => $responseArray['classification'],
+                    'cve' => implode(',', $responseArray['cve']),
+                    'country' => $responseArray['metadata']['country'],
+                    'org' => $responseArray['metadata']['organization'],
+                    'raw_response' => $this->ipContext->getResponseRaw()
+                ];
+            }
+            else{
+                return NULL;
+            }
         }
         else{
             // handle error
-
+            return NULL;
         }
     }
 }

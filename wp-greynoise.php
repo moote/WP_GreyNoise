@@ -42,8 +42,8 @@ define('WP_GREYNOISE_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
 define('WP_GREYNOISE_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ));
 define('WP_GREYNOISE_DB_TABLE_NAME', 'wpg_ip_log');
 
-register_activation_hook( __FILE__, ['WP_GreyNoise', 'plugin_activation']);
-register_deactivation_hook( __FILE__, ['WP_GreyNoise', 'plugin_deactivation']);
+register_activation_hook( __FILE__, ['WP_GreyNoise', 'pluginActivation']);
+register_deactivation_hook( __FILE__, ['WP_GreyNoise', 'pluginDeactivation']);
 
 require_once(WP_GREYNOISE_PLUGIN_DIR . 'class.wp_greynoise.php');
 add_action( 'init', ['WP_GreyNoise', 'init']);

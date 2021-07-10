@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IP Context call class for GreyNoise
+ * This interface defines the functions for all Greynoise endpoint classes
  * https://developer.greynoise.io/reference/ip-lookup-1#noisecontextip-1
  * 
  * @author  Rich Conaway

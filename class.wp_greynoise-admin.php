@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Handles plugin admin functionality; settings, dashboard etc
+ * 
+ * @author  Rich Conaway
+ * 
+ */
+
 /*
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,12 +24,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
-require_once(WP_GREYNOISE_PLUGIN_DIR . 'GreyNoise/GreyNoise.php');
+use GreyNoise\GreyNoise;
+
+require_once(WP_GREYNOISE_PLUGIN_DIR.'GreyNoise/GreyNoise.php');
 
 class WP_GreyNoise_Admin
 {
+	/** @var bool */
 	private static $initiated = false;
 
+	/**
+	 * Initialization check function
+	 */
 	public static function init()
 	{
 		if (!self::$initiated) {
@@ -95,6 +108,9 @@ class WP_GreyNoise_Admin
 		wp_enqueue_style('wpg_style');
 	}
 
+	/**
+	 * Defines the plugin admin settings and dashboard page
+	 */
 	public static function adminMenu()
 	{
 		add_options_page(
@@ -118,10 +134,13 @@ class WP_GreyNoise_Admin
 
 	/**
 	 * Validate the API key using GreyNoise class
+	 * 
+	 * @param string $apiKey GN API key string
+	 * @return string
 	 */
-	public static function validateApiKey($apiKey): ?string
+	public static function validateApiKey(string $apiKey): ?string
 	{
-		$gNoise = \GreyNoise\GreyNoise::getInstance($apiKey);
+		$gNoise = GreyNoise::getInstance($apiKey);
 
 		if ($gNoise) {
 			// api key is valid, can be returned
@@ -134,24 +153,33 @@ class WP_GreyNoise_Admin
 
 	/**
 	 * Validate 'enable' checkbox
+	 * 
+	 * @param int|NULL $isEnableGreyNoise The form checkbox value
+	 * @return bool
 	 */
-	public static function validateIsEnableGreyNoise($isEnableGreyNoise): bool
+	public static function validateIsEnableGreyNoise(?int $isEnableGreyNoise): bool
 	{
 		return self::validateBoolean($isEnableGreyNoise);
 	}
 
 	/**
 	 * Validate 'verbose logging' checkbox
+	 * 
+	 * @param int|NULL $isVerboseLoging The form checkbox value
+	 * @return bool
 	 */
-	public static function validateIsVerboseLogging($isVerboseLoging): bool
+	public static function validateIsVerboseLogging(?int $isVerboseLoging): bool
 	{
 		return self::validateBoolean($isVerboseLoging);
 	}
 
 	/**
 	 * Helper function to sanitize form boolean input
+	 * 
+	 * @param int|NULL $value The value to sanitize
+	 * @return bool
 	 */
-	protected static function validateBoolean($value): bool
+	protected static function validateBoolean(?int $value): bool
 	{
 		if ($value == 1) {
 			return true;
@@ -161,7 +189,22 @@ class WP_GreyNoise_Admin
 	}
 
 	/**
-	 * Render the settings page / form
+	 * Helper function to determine plugin status
+	 * 
+	 * @return bool
+	 */
+	public static function isGreyNoiseRunning(): bool
+	{
+		if(!empty(get_option('wpg_api_key')) && get_option('wpg_is_enable_greynoise')){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	/**
+	 * Render the dashboard page
 	 */
 	public static function adminPageRender()
 	{
