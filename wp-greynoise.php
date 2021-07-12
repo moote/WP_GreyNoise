@@ -42,13 +42,13 @@ define('WP_GREYNOISE_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
 define('WP_GREYNOISE_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ));
 define('WP_GREYNOISE_DB_TABLE_NAME', 'wpg_ip_log');
 
-register_activation_hook( __FILE__, ['WP_GreyNoise', 'pluginActivation']);
-register_deactivation_hook( __FILE__, ['WP_GreyNoise', 'pluginDeactivation']);
+register_activation_hook( __FILE__, ['\WP_GreyNoise\WP_GreyNoise', 'pluginActivation']);
+register_deactivation_hook( __FILE__, ['\WP_GreyNoise\WP_GreyNoise', 'pluginDeactivation']);
 
-require_once(WP_GREYNOISE_PLUGIN_DIR . 'class.wp_greynoise.php');
-add_action( 'init', ['WP_GreyNoise', 'init']);
+require_once(WP_GREYNOISE_PLUGIN_DIR . 'class-wp-greynoise.php');
+add_action( 'init', ['\WP_GreyNoise\WP_GreyNoise', 'init']);
 
 if(is_admin()){
-	require_once(WP_GREYNOISE_PLUGIN_DIR . 'class.wp_greynoise-admin.php');
-	add_action('init', ['WP_GreyNoise_Admin', 'init']);
+	require_once(WP_GREYNOISE_PLUGIN_DIR . 'class-wp-greynoise-admin.php');
+	add_action('init', ['\WP_GreyNoise\WP_GreyNoise_Admin', 'init']);
 }

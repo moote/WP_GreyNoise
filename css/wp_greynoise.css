@@ -1,8 +1,9 @@
-#wpg-form-wrap {
-    position: relative;
+.clear{
+    clear: both;
 }
 
-#wpg-form-wrap .notice{
+#wpg-form-wrap .notice,
+#wpg-dashboard-wrap .notice{
     display: inline-block;
     line-height: 1.4;
     padding: 11px 15px;
@@ -19,4 +20,19 @@
     background-repeat: no-repeat;
     background-position-x: 370px;
     background-position-y: 18px;
+}
+
+#wpg-dash-summary-wrap{
+    margin: 10px 20px 10px 0px;
+}
+
+#wpg-dash-summary-wrap li{
+    width: 50%;
+    float: left;
+    margin-bottom: 10px;
+}
+
+#wpg-cve-show-hidden,
+td.ip_address{
+    white-space: nowrap;
 }
