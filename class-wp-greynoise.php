@@ -193,13 +193,6 @@ class WP_GreyNoise
 				$isProxy = FALSE;
 			}
 
-			// debug
-			// $ipAddress = '103.123.234.37'; // malicious
-			// $ipAddress = '167.248.133.77'; // benign
-			// $ipAddress = '162.156.111.156'; // unseen
-			// $ipAddress = '34.127.93.20'; // unknown
-			// $ipAddress = '59.151.211.12'; // malicious, cve
-
 			// allow testing IP from URL
 			if(isset($_GET['wpg_ip'])){
 				$ipAddress = $_GET['wpg_ip'];
