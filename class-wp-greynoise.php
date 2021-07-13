@@ -180,13 +180,13 @@ class WP_GreyNoise
 				$ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
 			}
 			elseif(isset($_SERVER['HTTP_X_FORWARDED']) && !empty($_SERVER['HTTP_X_FORWARDED'])){
-				$ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				$ipAddress = $_SERVER['HTTP_X_FORWARDED'];
 			}
 			elseif(isset($_SERVER['HTTP_FORWARDED_FOR']) && !empty($_SERVER['HTTP_FORWARDED_FOR'])){
-				$ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				$ipAddress = $_SERVER['HTTP_FORWARDED_FOR'];
 			}
 			elseif(isset($_SERVER['HTTP_FORWARDED']) && !empty($_SERVER['HTTP_FORWARDED'])){
-				$ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				$ipAddress = $_SERVER['HTTP_FORWARDED'];
 			}
 			else{
 				$ipAddress = $_SERVER['REMOTE_ADDR'];
@@ -219,7 +219,12 @@ class WP_GreyNoise
 			// only log if response not null (verbose or malicious)
 			if(!is_null($gnResponse)){
 				// log IP data
-				$wpdb->query(self::prepareInsertLoggingQuery($decIpAddress, $ipAddress, $isProxy, $gnResponse));
+				$wpdb->query(self::prepareInsertLoggingQuery(
+					$decIpAddress,
+					$ipAddress,
+					$isProxy,
+					$gnResponse
+				));
 
 				return true;
 			}
